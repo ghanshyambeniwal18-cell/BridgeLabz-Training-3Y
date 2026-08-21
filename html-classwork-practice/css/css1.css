@@ -1,0 +1,66 @@
+h3{
+    background-color: red;
+    color: white;
+    font-size: 30px;
+    text-align: center;
+}
+
+div h3{
+    background-color: orange;
+    color: white;
+    text-align: center;
+}
+
+p{
+    background-color: blue;
+    color: white;   
+
+}
+
+a{
+    background-color: green;
+    color: white;
+}
+span{
+    background-color: yellow;
+    color: black;
+}
+
+#heading1{
+    background-color: purple;
+    color: white;
+}
+
+.c1{
+    background-color: pink;
+    color: black;
+}
+.box{
+    background-color: black;
+    color: white;
+    height: 100px;
+    width: 600px;
+    border: 2px solid red;
+    border-radius: 15px;
+    background-image: url();
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    /*margin-top: 35px;
+    margin-bottom: 50px;
+    margin-left: 50px;
+    margin-right: 50px;*/
+    margin: 35px 50px 50px 50px;
+    /*margin: 35px 50px; /* t b r l */
+
+    padding: 10px,15px,10px,15px;
+    /*padding: 10px 15px; */cx
+}
+
+.box-color{
+   width: 600px;
+   height: 100px;
+   /*background-color: rgb(133 ,57,83);*/
+   background-color: rgba(21,152,150,0.5);
+
+}
