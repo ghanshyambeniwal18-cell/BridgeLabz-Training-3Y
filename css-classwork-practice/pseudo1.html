@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        .text{
+            position:relative;
+            display:inline-block;
+        }
+        .text::after{
+            content:"";
+            position:absolute;
+            left:0;
+            bottom:0;
+            width:0%;
+            height:3px;
+            background-color:red;
+            transform:translateX(0);
+            transition:width .5s ease-in;
+            transition:transform .5s ease-in-out;
+        }
+        .text:hover::after{
+            width:100%;
+        }
+    </style>
+</head>
+<body>
+    <br>
+    <h1 class="text">Hover Me</h1>
+    </br>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<html lang="en">
+
+    <head>
+        <style>
+            .text{
+                position: relative;
+                display: inline-block;
+                width: 100px;
+                height: 100px;
+            }
+            .text::after{
+                content: "World";
+                position: absolute;
+                top: 0;
+                left: 100%;
+                width: 100%;
+                height: 100%;
+                background-color: yellow;
+                color: black;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transform: translateX(0);
+                transition: transform 0.5s ease-in-out;
+            }
+            .text:hover::after{
+                transform: translateX(-100%);
+                width: 100%;
+            }
+
+            .text::before{
+                content: "Hello";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: red;
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transform: translateX(0);
+                transition: transform 0.5s ease-in-out;
+            }
+            .text:hover::before{
+                transform: translateX(-100%);
+                width: 100%;
+            }
+            .text:hover{
+                color: transparent;
+                
+            }
+
+            .box{
+                width: 100px;
+                height: 100px;
+                background-color: red;
+                border-radius: 10px;
+                animation: animate 2s ease-in-out infinite;
+
+            }
+            @keyframes animate{
+                from{
+                    transform: translateX(0);
+                }
+                to{
+                    transform: translateX(200px);
+                    border-radius: 50%;
+                    background-color: blue;
+                }
+                0%{
+                    transform: translateX(0);
+                }
+                50%{
+                    transform: translateX(200px);
+                }
+                100%{
+                    transform: translateX(0);
+                }
+
+            }
+        </style>
+
+    </head>
+    <body>
+        <center><div class="text">Hello</div></center>
+        <center><div class="text">World</div></center>
+        <center><div class="box"></div></center>
+        <br> <br>
+        <center><div class="box"></div></center>
+    </body>
+</html>

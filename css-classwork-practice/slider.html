@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slider</title>
+    <style>
+        .slider{
+            width:500px;
+            height:300px;
+            overflow: hidden;
+
+        }
+        .slides{
+            display: flex;
+            width:1500px;
+            animation: slider 9s infinite;
+        }
+        .slides img{
+            width:500px;
+            height:300px;
+            object-fit: cover;
+        }
+        @keyframes slider{
+
+
+            0%{
+                transform: translateX(0);
+            }
+            30%{
+                transform: translateX(-500px);
+            }
+            30%{
+                transform: translateX(-500px);
+            }
+            60%{
+               transform: translateX(-100px); 
+            }
+            60%{
+               transform: translateX(-150px); 
+            }
+            100%{
+               transform: translateX(0); 
+            }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="slider">
+        <div class="slides">
+            <img src="https://unsplash.com/photos/hallstatt-village-reflecting-in-lake-q2dUSl9S4Xg" alt="">
+            <img src="https://unsplash.com/photos/vestrahorn-mountain-reflected-on-icelandic-beach-ruWkmt3nU58" alt="">
+            <img src="https://unsplash.com/photos/snow-mountain-under-stars-phIFdC6lA4E" alt="">
+
+        </div>
+    </div>
+</body>
+</html>
