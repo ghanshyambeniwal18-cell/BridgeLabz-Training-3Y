@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AJAX and API Assignment</title>
+
+    <!-- jQuery CDN -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- Axios CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <style>
+
+        body {
+            font-family: Arial;
+            background: #f4f4f4;
+            padding: 20px;
+        }
+
+        section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2563eb;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        input, select {
+            padding: 10px;
+            margin: 5px;
+            width: 220px;
+        }
+
+        button {
+            padding: 10px 15px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .product {
+            display: inline-block;
+            background: #f9fafb;
+            padding: 10px;
+            margin: 10px;
+            width: 150px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        .product img {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+        }
+
+        .employee, .task, .timetable {
+            padding: 12px;
+            margin: 10px 0;
+            background: #f1f5f9;
+            border-radius: 5px;
+        }
+
+        .active {
+            color: green;
+            font-weight: bold;
+        }
+
+        .inactive {
+            color: red;
+            font-weight: bold;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .skeleton {
+            background: #ddd;
+            height: 50px;
+            margin: 10px;
+            border-radius: 5px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<h1>AJAX AND API ASSIGNMENT</h1>
+
+
+<!-- ================================== -->
+<!-- Q1. REAL TIME LIVE SEARCH -->
+<!-- ================================== -->
+
+<section>
+
+    <h2>Q1. Real-Time Live Search</h2>
+
+    <input type="text" id="searchProduct"
+           placeholder="Search products...">
+
+    <p id="searchLoading"></p>
+
+    <div id="searchResults"></div>
+
+</section>
+
+
+<!-- ================================== -->
+<!-- Q2. EMPLOYEE STATUS DASHBOARD -->
+<!-- ================================== -->
+
+<section>
+
+    <h2>Q2. Employee Status Dashboard</h2>
+
+    <button id="loadEmployees">Load Employees</button>
+
+    <p id="employeeError" class="error"></p>
+
+    <div id="employeeList"></div>
+
+</section>
+
+
+<!-- ================================== -->
+<!-- Q3. TASK MANAGER -->
+<!-- ================================== -->
+
+<section>
+
+    <h2>Q3. Task Manager With Filters</h2>
+
+    <select id="taskFilter">
+
+        <option value="">All Tasks</option>
+
+        <option value="low">Low Priority</option>
+
+        <option value="medium">Medium Priority</option>
+
+        <option value="high">High Priority</option>
+
+        <option value="completed">Completed</option>
+
+    </select>
+
+    <button id="loadTasks">Load Tasks</button>
+
+    <div id="taskList"></div>
+
+    <p id="taskError" class="error"></p>
+
+</section>
+
+
+<!-- ================================== -->
+<!-- Q4. MULTI API DASHBOARD -->
+<!-- ================================== -->
+
+<section>
+
+    <h2>Q4. Multi-API Dashboard</h2>
+
+    <button id="loadDashboard">Load Dashboard</button>
+
+    <div id="dashboard">
+
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+
+    </div>
+
+    <p id="dashboardError" class="error"></p>
+
+</section>
+
+
+<!-- ================================== -->
+<!-- Q5. COLLEGE TIMETABLE VIEWER -->
+<!-- ================================== -->
+
+<section>
+
+    <h2>Q5. College Timetable Viewer</h2>
+
+    <select id="daySelect">
+
+        <option value="Monday">Monday</option>
+        <option value="Tuesday">Tuesday</option>
+        <option value="Wednesday">Wednesday</option>
+        <option value="Thursday">Thursday</option>
+        <option value="Friday">Friday</option>
+        <option value="Saturday">Saturday</option>
+
+    </select>
+
+    <div id="timetable"></div>
+
+</section>
+
+
+<!-- ================================== -->
+<!-- Q6. USER REGISTRATION -->
+<!-- ================================== -->
+
+<section>
+
+    <h2>Q6. User Registration With Duplicate Check</h2>
+
+    <form id="registerForm">
+
+        <input type="text" id="regName"
+               placeholder="Enter your name" required>
+
+        <br>
+
+        <input type="email" id="regEmail"
+               placeholder="Enter your email" required>
+
+        <br>
+
+        <input type="password" id="regPassword"
+               placeholder="Enter password" required>
+
+        <br>
+
+        <button type="submit">Register</button>
+
+    </form>
+
+    <p id="registerMessage"></p>
+
+</section>
+
+
+
+<!-- ================================== -->
+<!-- JAVASCRIPT -->
+<!-- ================================== -->
+
+<script>
+
+
+// ==================================
+// Q1. REAL TIME LIVE SEARCH
+// ==================================
+
+$("#searchProduct").on("input", function() {
+
+    let value = $(this).val().trim();
+
+    if (value === "") {
+
+        $("#searchResults").empty();
+
+        $("#searchLoading").text("");
+
+        return;
+
+    }
+
+    $("#searchLoading").text("Loading products...");
+
+    $.ajax({
+
+        url: "http://localhost:3000/products",
+
+        method: "GET",
+
+        data: {
+            q: value
+        },
+
+        success: function(products) {
+
+            $("#searchLoading").text("");
+
+            $("#searchResults").empty();
+
+            if (products.length === 0) {
+
+                $("#searchResults").text("No products found");
+
+                return;
+
+            }
+
+            products.forEach(function(product) {
+
+                let card = $("<div>").addClass("product");
+
+                let image = $("<img>")
+                    .attr("src", product.image)
+                    .attr("alt", product.title || product.name);
+
+                let name = $("<h4>")
+                    .text(product.title || product.name);
+
+                let price = $("<p>")
+                    .text("$" + product.price);
+
+                card.append(image, name, price);
+
+                $("#searchResults").append(card);
+
+            });
+
+        },
+
+        error: function() {
+
+            $("#searchLoading").text("Failed to load products.");
+
+        }
+
+    });
+
+});
+
+
+// ==================================
+// Q2. EMPLOYEE STATUS DASHBOARD
+// ==================================
+
+let employeeList = document.getElementById("employeeList");
+
+document.getElementById("loadEmployees")
+.addEventListener("click", function() {
+
+    let xhr = new XMLHttpRequest();
+
+    xhr.open("GET", "http://localhost:3000/employees");
+
+    xhr.onload = function() {
+
+        if (xhr.status >= 200 && xhr.status < 300) {
+
+            let employees = JSON.parse(xhr.responseText);
+
+            employeeList.innerHTML = "";
+
+            employees.forEach(function(emp) {
+
+                let div = document.createElement("div");
+
+                div.className = "employee";
+
+                div.innerHTML = `
+                    <strong>${escapeHTML(emp.name)}</strong>
+
+                    <span class="${emp.status}">
+                        ${emp.status}
+                    </span>
+
+                    <button>Toggle Status</button>
+                `;
+
+                let button = div.querySelector("button");
+
+                button.addEventListener("click", function() {
+
+                    let oldStatus = emp.status;
+
+                    let newStatus =
+                        oldStatus === "active"
+                        ? "inactive" : "active";
+
+                    // Immediately update UI
+
+                    emp.status = newStatus;
+
+                    div.querySelector("span").textContent = newStatus;
+
+                    div.querySelector("span").className = newStatus;
+
+                    let patch = new XMLHttpRequest();
+
+                    patch.open(
+                        "PATCH",
+                        "http://localhost:3000/employees/" + emp.id
+                    );
+
+                    patch.setRequestHeader(
+                        "Content-Type",
+                        "application/json"
+                    );
+
+                    patch.onload = function() {
+
+                        if (patch.status < 200 || patch.status >= 300) {
+
+                            emp.status = oldStatus;
+
+                            div.querySelector("span").textContent = oldStatus;
+
+                            div.querySelector("span").className = oldStatus;
+
+                            document.getElementById("employeeError")
+                            .textContent = "Failed to update employee status.";
+
+                        } else {
+
+                            document.getElementById("employeeError")
+                            .textContent = "";
+
+                        }
+
+                    };
+
+                    patch.onerror = function() {
+
+                        emp.status = oldStatus;
+
+                        div.querySelector("span").textContent = oldStatus;
+
+                        div.querySelector("span").className = oldStatus;
+
+                        document.getElementById("employeeError")
+                        .textContent = "Network error. Status reverted.";
+
+                    };
+
+                    patch.send(JSON.stringify({
+                        status: newStatus
+                    }));
+
+                });
+
+                employeeList.appendChild(div);
+
+            });
+
+        } else {
+
+            document.getElementById("employeeError")
+            .textContent = "Unable to load employees.";
+
+        }
+
+    };
+
+    xhr.onerror = function() {
+
+        document.getElementById("employeeError")
+        .textContent = "Network error.";
+
+    };
+
+    xhr.send();
+
+});
+
+
+// ==================================
+// Q3. TASK MANAGER WITH FILTERS
+// ==================================
+
+function loadTaskList() {
+
+    let filter = $("#taskFilter").val();
+
+    let params = {};
+
+    if (filter === "completed") {
+
+        params.completed = true;
+
+    } else if (filter !== "") {
+
+        params.priority = filter;
+
+    }
+
+    $("#taskList").text("Loading tasks...");
+
+    $.ajax({
+
+        url: "http://localhost:3000/tasks",
+
+        method: "GET",
+
+        data: params,
+
+        success: function(tasks) {
+
+            $("#taskList").empty();
+
+            $("#taskError").text("");
+
+            if (tasks.length === 0) {
+
+                $("#taskList").text("No tasks found.");
+
+                return;
+
+            }
+
+            tasks.forEach(function(task) {
+
+                let div = $("<div>").addClass("task");
+
+                let checkbox = $("<input>")
+                    .attr("type", "checkbox")
+                    .prop("checked", Boolean(task.completed));
+
+                let title = $("<span>")
+                    .text(task.title);
+
+                let priority = $("<span>")
+                    .text(" | Priority: " + task.priority);
+
+                checkbox.on("change", function() {
+
+                    let oldValue = task.completed;
+
+                    let newValue = this.checked;
+
+                    let box = this;
+
+                    box.disabled = true;
+
+                    $.ajax({
+
+                        url: "http://localhost:3000/tasks/" + task.id,
+
+                        method: "PATCH",
+
+                        contentType: "application/json",
+
+                        data: JSON.stringify({
+                            completed: newValue
+                        }),
+
+                        success: function() {
+
+                            task.completed = newValue;
+
+                            box.disabled = false;
+
+                        },
+
+                        error: function() {
+
+                            box.checked = oldValue;
+
+                            box.disabled = false;
+
+                            alert("Failed to update task.");
+
+                        }
+
+                    });
+
+                });
+
+                div.append(checkbox, title, priority);
+
+                $("#taskList").append(div);
+
+            });
+
+        },
+
+        error: function() {
+
+            $("#taskList").empty();
+
+            $("#taskError").text("Failed to load tasks.");
+
+        }
+
+    });
+
+}
+
+$("#loadTasks").on("click", loadTaskList);
+
+$("#taskFilter").on("change", loadTaskList);
+
+
+// ==================================
+// Q4. MULTI API DASHBOARD
+// ==================================
+
+document.getElementById("loadDashboard")
+.addEventListener("click", async function() {
+
+    let dashboard = document.getElementById("dashboard");
+
+    let error = document.getElementById("dashboardError");
+
+    dashboard.innerHTML = `
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+    `;
+
+    error.textContent = "";
+
+    try {
+
+        let results = await Promise.allSettled([
+
+            fetch("http://localhost:3000/users"),
+
+            fetch("http://localhost:3000/orders"),
+
+            fetch("http://localhost:3000/products")
+
+        ]);
+
+        let names = ["Users", "Orders", "Products"];
+
+        let html = "";
+
+        let failed = false;
+
+        for (let i = 0; i < results.length; i++) {
+
+            let result = results[i];
+
+            if (result.status === "fulfilled" &&
+                result.value.ok) {
+
+                let data = await result.value.json();
+
+                html += `
+                    <div class="task">
+                        <h3>Total ${names[i]}: ${data.length}</h3>
+                    </div>
+                `;
+
+            } else {
+
+                failed = true;
+
+                html += `
+                    <div class="task">
+                        <h3>Total ${names[i]}: Unavailable</h3>
+                    </div>
+                `;
+
+            }
+
+        }
+
+        dashboard.innerHTML = html;
+
+        if (failed) {
+
+            error.textContent = "Some data could not be loaded.";
+
+        }
+
+    } catch (err) {
+
+        dashboard.innerHTML = "";
+
+        error.textContent = "Some data could not be loaded.";
+
+    }
+
+});
+
+
+// ==================================
+// Q5. COLLEGE TIMETABLE VIEWER
+// ==================================
+
+async function loadTimetable() {
+
+    let day = document.getElementById("daySelect").value;
+
+    let timetable = document.getElementById("timetable");
+
+    timetable.textContent = "Loading timetable...";
+
+    try {
+
+        let response = await fetch(
+            "http://localhost:3000/timetable?day=" +
+            encodeURIComponent(day)
+        );
+
+        if (!response.ok) {
+
+            throw new Error("Unable to fetch timetable");
+
+        }
+
+        let classes = await response.json();
+
+        timetable.innerHTML = "";
+
+        if (classes.length === 0) {
+
+            timetable.textContent = "No classes today.";
+
+            return;
+
+        }
+
+        classes.forEach(function(item) {
+
+            let div = document.createElement("div");
+
+            div.className = "timetable";
+
+            div.innerHTML = `
+                <h3>${escapeHTML(item.subject)}</h3>
+                <p>Faculty: ${escapeHTML(item.faculty)}</p>
+                <p>Time: ${escapeHTML(item.time)}</p>
+            `;
+
+            timetable.appendChild(div);
+
+        });
+
+    } catch (error) {
+
+        timetable.textContent = "Failed to load timetable.";
+
+    }
+
+}
+
+document.getElementById("daySelect")
+.addEventListener("change", loadTimetable);
+
+// Load default day
+
+loadTimetable();
+
+
+// ==================================
+// Q6. USER REGISTRATION WITH AXIOS
+// ==================================
+
+document.getElementById("registerForm")
+.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    let name = document.getElementById("regName").value.trim();
+
+    let email = document.getElementById("regEmail").value.trim();
+
+    let password = document.getElementById("regPassword").value;
+
+    let message = document.getElementById("registerMessage");
+
+    message.textContent = "Checking email...";
+
+    message.className = "";
+
+    try {
+
+        // First check whether email already exists
+
+        let response = await axios.get(
+            "http://localhost:3000/users",
+            {
+                params: {
+                    email: email
+                }
+            }
+        );
+
+        if (response.data.length > 0) {
+
+            message.textContent = "Email already registered.";
+
+            message.className = "error";
+
+            return;
+
+        }
+
+        // Register new user
+
+        let newUser = {
+
+            name: name,
+
+            email: email,
+
+            password: password
+
+        };
+
+        await axios.post(
+            "http://localhost:3000/users",
+            newUser
+        );
+
+        message.textContent = "Registration successful!";
+
+        message.className = "success";
+
+        document.getElementById("registerForm").reset();
+
+    } catch (error) {
+
+        message.textContent = "Registration failed. Try again.";
+
+        message.className = "error";
+
+    }
+
+});
+
+
+// ==================================
+// COMMON HELPER FUNCTION
+// ==================================
+
+function escapeHTML(value) {
+
+    let div = document.createElement("div");
+
+    div.textContent = String(value ?? "");
+
+    return div.innerHTML;
+
+}
+
+</script>
+
+</body>
+</html>
+{
+  "products": [
+    {
+      "id": 1,
+      "title": "Laptop",
+      "price": 45000,
+      "image": "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"
+    },
+    {
+      "id": 2,
+      "title": "Headphones",
+      "price": 1500,
+      "image": "https://fakestoreapi.com/img/61IBBVJvSDL._AC_SY695_.jpg"
+    }
+  ],
+  "employees": [
+    {
+      "id": 1,
+      "name": "Rahul",
+      "status": "active"
+    },
+    {
+      "id": 2,
+      "name": "Aman",
+      "status": "inactive"
+    }
+  ],
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Complete JavaScript",
+      "priority": "high",
+      "completed": false
+    },
+    {
+      "id": 2,
+      "title": "Learn AJAX",
+      "priority": "medium",
+      "completed": false
+    },
+    {
+      "id": 3,
+      "title": "Practice HTML",
+      "priority": "low",
+      "completed": true
+    }
+  ],
+  "users": [],
+  "orders": [
+    {
+      "id": 1,
+      "product": "Laptop"
+    },
+    {
+      "id": 2,
+      "product": "Mobile"
+    }
+  ],
+  "timetable": [
+    {
+      "id": 1,
+      "day": "Monday",
+      "subject": "Java",
+      "faculty": "Mr. Sharma",
+      "time": "10:00 AM"
+    },
+    {
+      "id": 2,
+      "day": "Monday",
+      "subject": "DBMS",
+      "faculty": "Mr. Verma",
+      "time": "12:00 PM"
+    },
+    {
+      "id": 3,
+      "day": "Tuesday",
+      "subject": "Operating System",
+      "faculty": "Mr. Kumar",
+      "time": "11:00 AM"
+    }
+  ]
+}
